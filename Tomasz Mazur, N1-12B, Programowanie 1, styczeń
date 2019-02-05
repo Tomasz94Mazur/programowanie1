@@ -1,0 +1,250 @@
+#include <iostream>
+#include <cstdlib>
+#include <fstream>
+
+using namespace std;
+
+struct Student
+{
+    int Age;
+    int Height;
+    int Semester;
+};
+
+Student* StudentCreate (int age, int height, int semester)
+{
+    Student *student=(Student*) malloc(sizeof(Student));
+    student->Age=24;
+    student->Height=189;
+    student->Semester=2;
+    return student;
+}
+
+void PrintStudent(Student *s)
+{
+    cout << "Wiek studenta: " << s->Age << endl;
+    cout << "Wzrost studenta: " << s->Height << endl;
+    cout << "Semestr: " << s->Semester << endl;
+}
+bool AreEqual (Student *s1, Student *s2)
+{
+    if (s1->Age==s2->Age && s1->Height==s2->Height && s1->Semester==s2->Semester)
+        return true;
+    else
+        return false;
+}
+
+struct Node
+{
+    int Value;
+    Node *Next;
+};
+
+Node *Create (int Value)
+{
+    Node *ND=(Node*)malloc(sizeof(Node));
+    ND->Value=Value;
+    ND->Next=ND;
+    return ND;
+}
+
+Node *GetTail (Node* root)
+{
+    Node *ND=root;
+    if (ND->Next!=root)
+    {
+        ND=ND->Next;
+    }
+    return ND;
+}
+
+void Add (Node* root, int Value)
+{
+    Node *old=GetTail(root);
+    Node *added=old->Next;
+    added->Next=root;
+	added->Value=Value;
+}
+
+void PrintList (Node* root)
+{
+    Node *ND=root;
+    Node *old=GetTail(root);
+    do
+    {
+        cout << ND->Value;
+    }
+    while (ND->Next!=root);
+}
+
+void RemoveNode (Node* root, int Value)
+{
+    Node *ND=GetTail(root);
+    Node *x=Value;
+    free(x);
+}
+
+void FreeList(Node* root)
+{
+    Node *ND=root->Next;
+    if (ND!=root)
+        free(root);
+}
+
+int Count (Node* root)
+{
+    Node *ND=root;
+    int Size = 0;
+	while (ND->Next!=root)
+	{
+		ND=ND->Next;
+		Size=Size+1;
+	}
+	if (Size>0)
+        return Size;
+}
+
+int main()
+{
+    //Zadanie 1.1
+    {
+        Student *s=StudentCreate(24, 189, 2);
+        PrintStudent(s);
+        free(s);
+        int wiek, wzrost, semestr;
+        cout << "Podaj wiek pierwszego studenta: ";    cin >> wiek;
+        cout << "Podaj wzrost pierwszego studenta: ";  cin >> wzrost;
+        cout << "Podaj semestr pierwszego studenta: "; cin >> semestr;
+        Student *s1 = StudentCreate(wiek, wzrost, semestr);
+        system("cls");
+        cout << "Podaj wiek drugiego studenta: ";      cin >> wiek;
+        cout << "Podaj wzrost drugiego studenta: ";    cin >> wzrost;
+        cout << "Podaj semestr drugiego studenta: ";   cin >> semestr;
+        Student *s2 = StudentCreate(wiek, wzrost, semestr);
+        system("cls");
+        if (AreEqual(s1, s2))
+            cout << "Dane u studentow sa identyczne.";
+        else
+             cout << "Dane u studentow roznia sie.";
+        free(s1);
+        free(s2);
+    }
+    //Zadanie 1.2
+    {
+        int wielkosc_tablicy=3;
+        Student* tablica_studentow=(Student*)malloc(wielkosc_tablicy*sizeof(Student));
+        for (int i=1; i<=wielkosc_tablicy; i++)
+        {
+            cout << "Podaj dane studenta nr: " << i;
+            cin >> tablica_studentow[i].Age;
+            cin >> tablica_studentow[i].Height;
+            cin >> tablica_studentow[i].Semester;
+            system("cls");
+        }
+        for (int i=1; i<=wielkosc_tablicy; i++)
+        {
+            cout << "Wiek studenta nr: " << i << " wynosi: " << tablica_studentow[i].Age;
+            cout << "Wzrost studenta nr: " << i << " wynosi: " << tablica_studentow[i].Height;
+            cout << "Semestr studenta nr: " << i << " to: " << tablica_studentow[i].Semester;
+        }
+        free(tablica_studentow);
+    }
+
+    //Zadanie 2
+    {
+        Node *root=Create(2);
+        PrintList(root);
+
+        Add(root, 4);
+        Add(root, 8);
+        Add(root, 16);
+        PrintList(root);
+
+        Add(root, 20);
+        PrintList(root);
+
+        cout << "Ostatni wezel ma wartosc: "; GetTail(root)->Value;
+
+        Add(root, 16);
+        PrintList(root);
+        cout << Count(root);
+
+        RemoveNode(root, 8);
+        PrintList(root);
+        RemoveNode(root, 10);
+        PrintList(root);
+        RemoveNode(root, 16);
+        PrintList(root);
+
+        cout << Count(root);
+        FreeList(root);
+        PrintList(root);
+    }
+
+    //Zadanie 3.1
+    {
+        fstream file;
+        file.open("numbers.txt", ios::out);
+        int i=1, x;
+        for (;;i++)
+        {
+            cout << "Podaj jakas liczbe: "; cin >> x;
+            if (x==0)
+            {
+                file << x << endl;
+                break;
+            }
+            else
+            {
+                file << x << endl;
+            }
+        }
+        file.close();
+    }
+    //Zadanie 3.2
+    {
+        int line;
+        fstream file;
+        file.open("numbers.txt", ios::in);
+
+        Node *root=Create(line);
+        while (getline(file, line))
+        {
+            //cout << line << endl;
+            Add(root, line);
+        }
+
+        file.close();
+        PrintList(root);
+    }
+    //Zadanie 3.3
+    {
+        fstream file;
+        file.open("numbers.txt", ios::in);
+        int *tab=new int[root];
+        int i,j;
+        for(i=root; i!=NULL; i=i->Next)
+        {
+            for(j=i; j!=NULL; j=j->Next)
+            {
+                if(tab[j]<tab[j-1])
+                {
+                    int bufor;
+                    bufor=tab[j-1];
+                    tab[j-1]=tab[j];
+                    tab[j]=bufor;
+                }
+            }
+        }
+        file.close();
+        file.open("sorted.txt", ios::out | ios::app);
+        while(!file.eof())
+        {
+            file << tab[i];
+        }
+        delete [] tab;
+        file.close();
+    }
+
+    return 0;
+}
